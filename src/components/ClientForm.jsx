@@ -98,6 +98,7 @@ const ClientForm = ({
 
   function handlePetChange(event) {
     const petId = event.target.value;
+    setSelectedPet(petId);
 
     if (petId === "New") {
       setClientData({
@@ -133,8 +134,41 @@ const ClientForm = ({
 
   return (
     <FormContainer>
-      <FormTitle>Cadastro de Cliente e Pet</FormTitle>
       <form onSubmit={handleSubmit}>
+        <FormTitle>Dados da consulta</FormTitle>
+        <FormGrid>
+          <div>
+            <FormField>
+              <Label htmlFor="reason">Motivo da Consulta:</Label>
+              <Select
+                id="reason"
+                name="reason"
+                value={clientData.reason}
+                onChange={handleChange}
+                required
+              >
+                <option value="Checkup">Checkup</option>
+                <option value="Vacinação">Vacinação</option>
+                <option value="Banho e Tosa">Banho e Tosa</option>
+                <option value="Outro">Outro</option>
+              </Select>
+            </FormField>
+          </div>
+          <div>
+            <FormField>
+              <Label htmlFor="notes">Observações:</Label>
+              <Input
+                type="text"
+                id="notes"
+                name="notes"
+                value={clientData.notes}
+                onChange={handleChange}
+              />
+            </FormField>
+          </div>
+        </FormGrid>
+
+        <FormTitle>Dados do Cliente e Pet</FormTitle>
         <FormGrid>
           <div>
             <FormField>

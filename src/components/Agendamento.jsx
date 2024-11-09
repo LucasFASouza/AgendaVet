@@ -59,8 +59,8 @@ function Agendamento() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        date: selectedDate,
-        time: selectedTime,
+        appointment_date: selectedDate,
+        appointment_time: selectedTime,
         client: clientData.clientName,
         email: clientData.clientEmail,
         phone: clientData.clientPhone,
@@ -68,6 +68,8 @@ function Agendamento() {
         species: clientData.petSpecies,
         breed: clientData.petBreed,
         age: clientData.petAge,
+        reason: clientData.reason,
+        notes: clientData.notes,
       }),
     })
       .then((response) => response.json())
@@ -85,6 +87,8 @@ function Agendamento() {
           petSpecies: "",
           petBreed: "",
           petAge: "",
+          reason: "",
+          notes: "",
         });
       })
       .catch((error) => {
@@ -131,6 +135,12 @@ function Agendamento() {
       {formStage === 3 && (
         <div>
           <h2>Resumo do agendamento:</h2>
+          <p>
+            <strong>Motivo da Consulta:</strong> {clientData.reason}
+          </p>
+          <p>
+            <strong>Observações:</strong> {clientData.notes}
+          </p>
           <p>
             <strong>Data:</strong> {selectedDate}
           </p>
