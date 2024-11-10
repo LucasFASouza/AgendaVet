@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import BookingCalendar from "./BookingCalendar";
-import AvailableTimes from "./AvailableTimes";
-import ClientForm from "./ClientForm";
+import BookingCalendar from "../components/agendamento/BookingCalendar";
+import AvailableTimes from "../components/agendamento/AvailableTimes";
+import ClientForm from "../components/agendamento/ClientForm";
 import styled from "styled-components";
+import { format } from "date-fns";
 
 const DoubleContainer = styled.div`
   display: grid;
@@ -31,6 +32,8 @@ function Agendamento() {
     petSpecies: "",
     petBreed: "",
     petAge: "",
+    notes: "",
+    reason: "Banho e Tosa",
   });
 
   const [formStage, setFormStage] = useState(1);
@@ -53,7 +56,7 @@ function Agendamento() {
   }
 
   function postAppointment() {
-    fetch("http://localhost:3000/appointments", {
+    fetch("https://api-mongo-db-pi2.onrender.com/appointments", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -61,13 +64,16 @@ function Agendamento() {
       body: JSON.stringify({
         appointment_date: selectedDate,
         appointment_time: selectedTime,
-        client: clientData.clientName,
-        email: clientData.clientEmail,
-        phone: clientData.clientPhone,
-        pet: clientData.petName,
-        species: clientData.petSpecies,
-        breed: clientData.petBreed,
-        age: clientData.petAge,
+
+        client_name: clientData.clientName,
+        client_email: clientData.clientEmail,
+        client_phone: clientData.clientPhone,
+
+        pet_name: clientData.petName,
+        pet_species: clientData.petSpecies,
+        pet_breed: clientData.petBreed,
+        pet_age: clientData.petAge,
+
         reason: clientData.reason,
         notes: clientData.notes,
       }),
@@ -87,7 +93,7 @@ function Agendamento() {
           petSpecies: "",
           petBreed: "",
           petAge: "",
-          reason: "",
+          reason: "Banho e Tosa",
           notes: "",
         });
       })
@@ -142,7 +148,7 @@ function Agendamento() {
             <strong>Observações:</strong> {clientData.notes}
           </p>
           <p>
-            <strong>Data:</strong> {selectedDate}
+            <strong>Data:</strong> {format(selectedDate, "dd/MM/yyyy")}
           </p>
           <p>
             <strong>Horário:</strong> {selectedTime}

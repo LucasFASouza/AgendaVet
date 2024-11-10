@@ -1,3 +1,3 @@
-json-server --watch db.json
+npm install
 
 npm run dev

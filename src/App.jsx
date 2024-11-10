@@ -1,6 +1,6 @@
 import { Routes, Route, Link } from "react-router-dom";
-import Agendamento from "./components/Agendamento";
-import Admin from "./components/Admin"; // Import your new component
+import Agendamento from "./pages/Agendamento";
+import Admin from "./pages/Admin";
 import styled from "styled-components";
 
 const AppContainer = styled.div`

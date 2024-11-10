@@ -57,9 +57,13 @@ const BookingCalendar = ({ onDateSelect, selectedDate }) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch("http://localhost:3000/time-slots");
+      const response = await fetch(
+        "https://api-mongo-db-pi2.onrender.com/time_slots"
+      );
       const data = await response.json();
-      const dates = data.map((slot) => parseISO(slot.date));
+      const dates = data
+        .filter((slot) => slot.appointment_id)
+        .map((slot) => parseISO(slot.slot_date));
       setHighlightedDates(dates);
 
       if (dates.length > 0) {
@@ -99,7 +103,7 @@ const BookingCalendar = ({ onDateSelect, selectedDate }) => {
       isSameDay(day, highlightedDate)
     );
 
-    const isSelected = selectedDate && isSameDay(day, parseISO(selectedDate));
+    const isSelected = selectedDate && isSameDay(day, selectedDate);
 
     const color = isHighlighted ? "#fff" : "#888";
     const backgroundColor = isHighlighted ? "#4CAF50" : "#ddd";
@@ -113,7 +117,7 @@ const BookingCalendar = ({ onDateSelect, selectedDate }) => {
           backgroundColor: backgroundColor,
           outline: outline,
         }}
-        onClick={() => onDateSelect(format(day, "yyyy-MM-dd"))}
+        onClick={() => onDateSelect(day)}
       >
         {format(day, "dd/MM")}
       </DayButton>

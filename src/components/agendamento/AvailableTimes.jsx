@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { format, parseISO } from "date-fns";
+import { format, isSameDay, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
 const TimesContainer = styled.div`
@@ -48,11 +48,18 @@ const AvailableTimes = ({ selectedDate, onTimeSelect, selectedTime }) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch("http://localhost:3000/time-slots");
+      const response = await fetch(
+        "https://api-mongo-db-pi2.onrender.com/time_slots"
+      );
       const data = await response.json();
+
+      console.log("selectedDate", selectedDate);
+      console.log("data", data[0]);
+
       const times = data
-        .filter((slot) => slot.date === selectedDate)
-        .map((slot) => slot.time);
+        .filter((slot) => isSameDay(parseISO(slot.slot_date), selectedDate))
+        .filter((slot) => slot.is_available === true)
+        .map((slot) => slot.slot_time);
       setAvailableTimes(times);
     };
 
@@ -66,7 +73,7 @@ const AvailableTimes = ({ selectedDate, onTimeSelect, selectedTime }) => {
       <TimesTitle>
         {selectedDate
           ? `Horários Disponíveis para ${format(
-              parseISO(selectedDate),
+              selectedDate,
               "dd/MM/yyyy",
               { locale: ptBR }
             )}`
