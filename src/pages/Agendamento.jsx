@@ -3,7 +3,7 @@ import BookingCalendar from "../components/agendamento/BookingCalendar";
 import AvailableTimes from "../components/agendamento/AvailableTimes";
 import ClientForm from "../components/agendamento/ClientForm";
 import styled from "styled-components";
-import { format } from "date-fns";
+import { format, set } from "date-fns";
 
 const DoubleContainer = styled.div`
   display: grid;
@@ -23,6 +23,7 @@ const HalfWidthContainer = styled.div`
 function Agendamento() {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
+  const [timeSlotId, setTimeSlotId] = useState(null);
 
   const [clientData, setClientData] = useState({
     clientName: "",
@@ -40,7 +41,13 @@ function Agendamento() {
 
   useEffect(() => {
     setSelectedTime(null);
+    setTimeSlotId(null);
   }, [selectedDate]);
+
+  function selectTime(time, id) {
+    setSelectedTime(time);
+    setTimeSlotId(id);
+  }
 
   function advanceStage() {
     console.log(clientData);
@@ -76,15 +83,32 @@ function Agendamento() {
 
         reason: clientData.reason,
         notes: clientData.notes,
+
+        status: "Scheduled",
       }),
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log("Success:", data);
+        fetch(
+          "https://api-mongo-db-pi2.onrender.com/time_slots/" + timeSlotId,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              is_available: false,
+              appointment_id: data._id,
+            }),
+          }
+        );
+      })
+      .then(() => {
         alert("Agendamento realizado com sucesso!");
         setFormStage(1);
         setSelectedDate(null);
         setSelectedTime(null);
+        setTimeSlotId(null);
         setClientData({
           clientName: "",
           clientEmail: "",
@@ -119,7 +143,7 @@ function Agendamento() {
             <HalfWidthContainer>
               <AvailableTimes
                 selectedDate={selectedDate}
-                onTimeSelect={setSelectedTime}
+                onTimeSelect={selectTime}
                 selectedTime={selectedTime}
               />
             </HalfWidthContainer>

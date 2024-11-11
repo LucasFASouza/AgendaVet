@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { format, addMinutes, startOfDay } from "date-fns";
+import { format, addMinutes, parse, startOfDay } from "date-fns";
 
 const Container = styled.div`
   display: flex;
@@ -87,20 +87,23 @@ const Button = styled.button`
   }
 `;
 
-const generateTimes = () => {
+const generateTimes = (startTime, endTime, interval) => {
   const times = [];
-  let time = startOfDay(new Date());
-  for (let i = 0; i < 48; i++) {
+  let time = parse(startTime, "HH:mm", new Date());
+  const end = parse(endTime, "HH:mm", new Date());
+
+  while (time <= end) {
     times.push(format(time, "HH:mm"));
-    time = addMinutes(time, 30);
+    time = addMinutes(time, interval);
   }
+
   return times;
 };
 
 const AddDates = () => {
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTimes, setSelectedTimes] = useState([]);
-  const times = generateTimes();
+  const times = generateTimes("08:00", "18:00", 60);
 
   const handleDateChange = (e) => {
     setSelectedDate(e.target.value);
@@ -117,31 +120,33 @@ const AddDates = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const data = {
-      date: selectedDate,
-      times: selectedTimes,
-    };
 
-    console.log(data);
+    selectedTimes.sort();
 
-    fetch("https://api-mongo-db-pi2.onrender.com/time_slots", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("Success:", data);
-        alert("Horários adicionados com sucesso!");
-        setSelectedDate("");
-        setSelectedTimes([]);
+    selectedTimes.forEach((time) => {
+      fetch("https://api-mongo-db-pi2.onrender.com/time_slots", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          slot_date: selectedDate,
+          slot_time: time,
+          is_available: true,
+          appointment_id: null,
+        }),
       })
-      .catch((error) => {
-        console.error("Error:", error);
-        alert("Ocorreu um erro ao adicionar os horários.");
-      });
+        .then((response) => response.json())
+        .catch((error) => {
+          console.error("Error:", error);
+          alert("Ocorreu um erro ao adicionar os horários.");
+        });
+    });
+
+    setSelectedDate("");
+    setSelectedTimes([]);
+
+    alert("Horários adicionados com sucesso!");
   };
 
   return (

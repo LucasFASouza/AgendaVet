@@ -56,7 +56,7 @@ const AvailableTimes = ({ selectedDate, onTimeSelect, selectedTime }) => {
 
       const times = data
         .filter((slot) => isSameDay(parseISO(slot.slot_date), selectedDate))
-        .filter((slot) => slot.is_available === true)
+        .filter((slot) => slot.appointment_id)
         .map((slot) => slot.slot_time);
 
       times.sort((a, b) => {
