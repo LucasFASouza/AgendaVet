@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { format, addMinutes, parse, startOfDay } from "date-fns";
+import { format, addMinutes, parse, addDays } from "date-fns";
 
 const Container = styled.div`
   display: flex;
@@ -121,6 +121,15 @@ const AddDates = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    console.log("selectedDate", selectedDate);
+
+    const nextDay = format(
+      addDays(parse(selectedDate, "yyyy-MM-dd", new Date()), 1),
+      "yyyy-MM-dd"
+    );
+
+    console.log("nextDay", nextDay);
+
     selectedTimes.sort();
 
     selectedTimes.forEach((time) => {
@@ -130,7 +139,7 @@ const AddDates = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          slot_date: selectedDate,
+          slot_date: nextDay,
           slot_time: time,
           is_available: true,
           appointment_id: null,

@@ -138,7 +138,7 @@ const BookingCalendar = ({ onDateSelect, selectedDate }) => {
 
   return (
     <CalendarContainer>
-      <CalendarTitle>Datas disponíveis</CalendarTitle>
+      <CalendarTitle>Consultas marcadas:</CalendarTitle>
       <WeekRow>
         {dayLabels.map((label, index) => (
           <DayLabel key={index}>{label}</DayLabel>
