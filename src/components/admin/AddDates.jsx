@@ -121,14 +121,10 @@ const AddDates = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    console.log("selectedDate", selectedDate);
-
     const nextDay = format(
       addDays(parse(selectedDate, "yyyy-MM-dd", new Date()), 1),
       "yyyy-MM-dd"
     );
-
-    console.log("nextDay", nextDay);
 
     selectedTimes.sort();
 
