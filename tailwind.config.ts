@@ -4,7 +4,9 @@ import animate from "tailwindcss-animate";
 
 export default {
   darkMode: ["class", "[data-theme='dark']"],
-  content: ["./src/**/*.tsx"],
+  content: [
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
   theme: {
     extend: {
       fontFamily: {
@@ -59,5 +61,8 @@ export default {
       },
     },
   },
-  plugins: [animate],
+  plugins: [
+    animate,
+    require("@tailwindcss/forms"),
+  ],
 } satisfies Config;
