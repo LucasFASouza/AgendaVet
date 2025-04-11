@@ -25,6 +25,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
+interface Timeslot {
+  id: number;
+  datetime: Date;
+  isAvailable: boolean;
+}
+
 const formSchema = z.object({
   date: z.date({ required_error: "Please select a date." }),
   time: z.string({ required_error: "Please select a time." }),
@@ -34,10 +40,9 @@ const formSchema = z.object({
 });
 
 export default function Page() {
-  const [timeslots, setTimeslots] = useState([]);
-  const [availableDates, setAvailableDates] = useState([]);
-  const [availableTimes, setAvailableTimes] = useState([]);
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [timeslots, setTimeslots] = useState<Timeslot[]>([]);
+  const [availableDates, setAvailableDates] = useState<Date[]>([]);
+  const [availableTimes, setAvailableTimes] = useState<string[]>([]);
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -68,8 +73,10 @@ export default function Page() {
     fetchTimeslots();
   }, []);
 
-  const handleDateChange = (date) => {
-    setSelectedDate(date);
+  // Change the parameter type to match what Calendar expects
+  const handleDateChange = (date: Date | undefined) => {
+    if (!date) return;
+
     const filteredTimes = timeslots
       .filter(
         (slot) =>
@@ -87,7 +94,7 @@ export default function Page() {
     form.setValue("time", ""); // Reset time selection
   };
 
-  const onSubmit = async (values) => {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     const selectedSlot = timeslots.find(
       (slot) =>
         new Date(slot.datetime).toDateString() ===

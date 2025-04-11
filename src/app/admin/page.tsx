@@ -12,13 +12,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as zod from "zod";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Dialog,
@@ -44,7 +38,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-// import { toast } from "@/components/ui/sonner";
+
+interface Timeslot {
+  id: number;
+  datetime: Date;
+  isAvailable: boolean;
+}
+
+interface Appointment {
+  id: number;
+  timeslotId: number;
+  petName: string;
+  species: string;
+  reason: string;
+  datetime?: Date;
+}
 
 const formSchema = zod.object({
   date: zod.date({
@@ -59,14 +67,14 @@ export default function Home() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
     new Date()
   );
-  const [appointments, setAppointments] = useState([]);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [addSlotOpen, setAddSlotOpen] = useState(false);
   const [manageSlotOpen, setManageSlotOpen] = useState(false);
   const [datesWithAppointments, setDatesWithAppointments] = useState<Date[]>(
     []
   );
-  const [availableTimeSlots, setAvailableTimeSlots] = useState([]);
+  const [availableTimeSlots, setAvailableTimeSlots] = useState<Timeslot[]>([]);
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -133,6 +141,7 @@ export default function Home() {
 
         const filteredAppointments = appointmentsWithTime.filter(
           (appointment) => {
+            if (!appointment.datetime) return false;
             const appointmentDate = new Date(appointment.datetime);
             return appointmentDate >= startOfDay && appointmentDate <= endOfDay;
           }
@@ -146,7 +155,7 @@ export default function Home() {
     fetchAppointmentsForDate();
   }, [selectedDate]);
 
-  const onSubmit = async (values) => {
+  const onSubmit = async (values: zod.infer<typeof formSchema>) => {
     const { date, time } = values;
 
     const [hours, minutes] = time.split(":");
@@ -166,11 +175,6 @@ export default function Home() {
     });
 
     if (isDuplicate) {
-      // toast?.({
-      //   title: "Error",
-      //   description: "A time slot for this date and time already exists.",
-      //   variant: "destructive",
-      // }) || alert("A time slot for this date and time already exists.");
       alert("A time slot for this date and time already exists.");
       return;
     }
@@ -184,14 +188,10 @@ export default function Home() {
     form.reset();
   };
 
-  const handleDeleteTimeSlot = async (id) => {
+  const handleDeleteTimeSlot = async (id: number) => {
     await deleteTimeslot(id);
     fetchTimeslots();
 
-    // toast?.({
-    //   title: "Success",
-    //   description: "Time slot removed successfully.",
-    // }) || alert("Time slot removed successfully.");
     alert("Time slot removed successfully.");
   };
 
@@ -409,7 +409,7 @@ export default function Home() {
                   <CardHeader>
                     <CardTitle>{appointment.petName}</CardTitle>
                     <div className="text-sm text-gray-500">
-                      {format(new Date(appointment.datetime), "h:mm a")} -{" "}
+                      {format(new Date(appointment.datetime!), "h:mm a")} -{" "}
                       {appointment.species}
                     </div>
                   </CardHeader>
