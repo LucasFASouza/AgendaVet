@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { ProfileBadge } from "@/components/ProfileBadge";
+import { Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -27,7 +30,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <Suspense fallback={<Skeleton className="size-8 rounded-full" />}>
+          <ProfileBadge />
+        </Suspense>
+
+        <main className="px-6 pb-24 flex-grow">{children}</main>
       </body>
     </html>
   );
