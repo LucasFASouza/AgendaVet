@@ -1,7 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import * as z from "zod";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardFooter,
+} from "@/components/ui/card";
 import {
   getAppointments,
   deleteAppointment,
@@ -52,26 +58,24 @@ export default function MyAppointmentsPage() {
       ) : (
         <div className="space-y-4">
           {appointments.map((appointment) => (
-            <div
-              key={appointment.id}
-              className="border rounded-md p-4 flex justify-between items-center"
-            >
-              <div>
-                <p className="font-bold">{appointment.petName}</p>
-                <p>{appointment.species}</p>
-                <p>{appointment.reason}</p>
-                <p>
-                  at{" "}
+            <Card key={appointment.id}>
+              <CardHeader>
+                <CardTitle>
                   {appointment.datetime?.toLocaleString("en-US", {
                     month: "long",
                     day: "numeric",
-                    year: "numeric",
                     hour: "2-digit",
                     minute: "2-digit",
                   })}
-                </p>
-              </div>
-              <div className="flex gap-2">
+                </CardTitle>
+                <div className="text-sm text-gray-500">
+                  {appointment.petName} - {appointment.species}
+                </div>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-700">{appointment.reason}</p>
+              </CardContent>
+              <CardFooter>
                 <Button
                   variant="destructive"
                   onClick={() =>
@@ -80,8 +84,8 @@ export default function MyAppointmentsPage() {
                 >
                   Cancel
                 </Button>
-              </div>
-            </div>
+              </CardFooter>
+            </Card>
           ))}
         </div>
       )}
