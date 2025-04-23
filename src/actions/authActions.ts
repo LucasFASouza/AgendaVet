@@ -32,3 +32,21 @@ export async function verifyAdminRole() {
     return true;
   }
 }
+
+export async function saveUserAddress(
+  email: string,
+  zipCode: string,
+  addressStreet: string,
+  addressNumber: string,
+  addressComplement?: string
+) {
+  await db
+    .update(users)
+    .set({
+      zipCode,
+      addressStreet,
+      addressNumber,
+      addressComplement,
+    })
+    .where(eq(users.email, email));
+}

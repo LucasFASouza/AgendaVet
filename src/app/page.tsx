@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { getTimeslots, addAppointment } from "@/actions/appointmentAction";
+import { saveUserAddress } from "@/actions/authActions";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Form,
@@ -24,6 +25,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface Timeslot {
   id: number;
@@ -37,12 +44,19 @@ const formSchema = z.object({
   petName: z.string().min(1, "Pet name is required."),
   species: z.string().min(1, "Species is required."),
   reason: z.string().min(1, "Reason is required."),
+  pickupAtHome: z.boolean(),
+  zipCode: z.string().optional(),
+  addressStreet: z.string().optional(),
+  addressNumber: z.string().optional(),
+  addressComplement: z.string().optional(),
 });
 
 export default function Page() {
   const [timeslots, setTimeslots] = useState<Timeslot[]>([]);
   const [availableDates, setAvailableDates] = useState<Date[]>([]);
   const [availableTimes, setAvailableTimes] = useState<string[]>([]);
+  const [showAddressDialog, setShowAddressDialog] = useState(false);
+  const [userEmail, setUserEmail] = useState(""); // Assume this is fetched from session
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -52,6 +66,11 @@ export default function Page() {
       petName: "",
       species: "",
       reason: "",
+      pickupAtHome: false,
+      zipCode: "",
+      addressStreet: "",
+      addressNumber: "",
+      addressComplement: "",
     },
   });
 
@@ -73,7 +92,6 @@ export default function Page() {
     fetchTimeslots();
   }, []);
 
-  // Change the parameter type to match what Calendar expects
   const handleDateChange = (date: Date | undefined) => {
     if (!date) return;
 
@@ -105,20 +123,39 @@ export default function Page() {
         }) === values.time
     );
 
-    if (selectedSlot) {
-      await addAppointment(
-        selectedSlot.id,
-        values.petName,
-        values.species,
-        values.reason
-      );
+    try {
+      if (selectedSlot) {
+        await addAppointment(
+          selectedSlot.id,
+          values.petName,
+          values.species,
+          values.reason,
+          values.pickupAtHome,
+          userEmail
+        );
 
-      // Refresh timeslots
-      const slots = await getTimeslots();
-      setTimeslots(slots);
-      setAvailableTimes([]);
-      form.reset();
+        // Refresh timeslots
+        const slots = await getTimeslots();
+        setTimeslots(slots);
+        setAvailableTimes([]);
+        form.reset();
+      }
+    } catch (error) {
+      if (error instanceof Error && error.message.includes("address details")) {
+        setShowAddressDialog(true);
+      }
     }
+  };
+
+  const saveAddress = async (addressValues: z.infer<typeof formSchema>) => {
+    await saveUserAddress(
+      userEmail,
+      addressValues.zipCode!,
+      addressValues.addressStreet!,
+      addressValues.addressNumber!,
+      addressValues.addressComplement
+    );
+    setShowAddressDialog(false);
   };
 
   return (
@@ -226,12 +263,93 @@ export default function Page() {
               )}
             />
 
+            <FormField
+              control={form.control}
+              name="pickupAtHome"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Pickup at Home</FormLabel>
+                  <FormControl>
+                    <input
+                      type="checkbox"
+                      checked={field.value}
+                      onChange={(e) => field.onChange(e.target.checked)}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
             <Button type="submit" disabled={availableTimes.length === 0}>
               Book Appointment
             </Button>
           </form>
         </Form>
       </div>
+
+      <Dialog open={showAddressDialog} onOpenChange={setShowAddressDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Provide Address Details</DialogTitle>
+          </DialogHeader>
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(saveAddress)}
+              className="space-y-4"
+            >
+              <FormField
+                control={form.control}
+                name="zipCode"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Zip Code</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="addressStreet"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Street</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="addressNumber"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Number</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="addressComplement"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Complement</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <Button type="submit">Save Address</Button>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

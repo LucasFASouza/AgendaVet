@@ -22,6 +22,7 @@ export const appointments = pgTable("appointments", {
   petName: text("pet_name").notNull(),
   species: text("species").notNull(),
   reason: text("reason").notNull(),
+  pickupAtHome: boolean("pickup_at_home").default(false).notNull(),
 });
 
 export const users = pgTable("user", {
@@ -33,6 +34,10 @@ export const users = pgTable("user", {
   emailVerified: timestamp("emailVerified", { mode: "date" }),
   image: text("image"),
   role: text("role").default("user"),
+  zipCode: text("zip_code"),
+  addressStreet: text("address_street"),
+  addressNumber: text("address_number"),
+  addressComplement: text("address_complement"),
 });
 
 export const userRelations = relations(users, ({ many }) => ({
