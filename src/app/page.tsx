@@ -31,6 +31,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useSession } from "next-auth/react";
 
 interface Timeslot {
   id: number;
@@ -56,7 +57,8 @@ export default function Page() {
   const [availableDates, setAvailableDates] = useState<Date[]>([]);
   const [availableTimes, setAvailableTimes] = useState<string[]>([]);
   const [showAddressDialog, setShowAddressDialog] = useState(false);
-  const [userEmail, setUserEmail] = useState(""); // Assume this is fetched from session
+  
+  const { data: session } = useSession();
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -131,7 +133,7 @@ export default function Page() {
           values.species,
           values.reason,
           values.pickupAtHome,
-          userEmail
+          session?.user?.email || "",
         );
 
         // Refresh timeslots
@@ -149,7 +151,7 @@ export default function Page() {
 
   const saveAddress = async (addressValues: z.infer<typeof formSchema>) => {
     await saveUserAddress(
-      userEmail,
+      session?.user?.email || "",
       addressValues.zipCode!,
       addressValues.addressStreet!,
       addressValues.addressNumber!,
