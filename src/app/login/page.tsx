@@ -20,8 +20,8 @@ export default async function LoginPage() {
     <div className="flex justify-center items-center min-h-[80vh]">
       <Card className="w-full max-w-sm">
         <CardHeader className="space-y-1 text-center">
-          <CardTitle className="text-2xl font-bold">Welcome :)</CardTitle>
-          <CardDescription>Sign in here</CardDescription>
+          <CardTitle className="text-2xl font-bold">Bem-vindo :)</CardTitle>
+          <CardDescription>Faça seu login aqui</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <Login />

@@ -39,11 +39,11 @@ interface Timeslot {
 }
 
 const formSchema = z.object({
-  date: z.date({ required_error: "Please select a date." }),
-  time: z.string({ required_error: "Please select a time." }),
-  petName: z.string().min(1, "Pet name is required."),
-  species: z.string().min(1, "Species is required."),
-  reason: z.string().min(1, "Reason is required."),
+  date: z.date({ required_error: "Por favor selecione uma data" }),
+  time: z.string({ required_error: "Por favor selecione um horário." }),
+  petName: z.string().min(1, "Nome do pet é obrigatório."),
+  species: z.string().min(1, "Espécie do pet é obrigatória."),
+  reason: z.string().min(1, "Razão é obrigatória."),
   pickupAtHome: z.boolean(),
   zipCode: z.string().optional(),
   addressStreet: z.string().optional(),
@@ -161,7 +161,7 @@ export default function Page() {
   return (
     <div className="container mx-auto py-10 grid grid-cols-1 lg:grid-cols-2 gap-8">
       <div className="space-y-6">
-        <h1 className="text-3xl font-bold">Book an Appointment</h1>
+        <h1 className="text-3xl font-bold">Realizar agendamento</h1>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
@@ -169,7 +169,7 @@ export default function Page() {
               name="date"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Select a Date</FormLabel>
+                  <FormLabel>Selecione uma data</FormLabel>
                   <FormControl>
                     <Calendar
                       mode="single"
@@ -197,7 +197,7 @@ export default function Page() {
               name="time"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Select a Time</FormLabel>
+                  <FormLabel>Selecione um horário</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
@@ -205,7 +205,7 @@ export default function Page() {
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select a time" />
+                        <SelectValue placeholder="Selecione um horário" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -226,7 +226,7 @@ export default function Page() {
               name="petName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Pet Name</FormLabel>
+                  <FormLabel>Nome do pet</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -240,7 +240,7 @@ export default function Page() {
               name="species"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Species</FormLabel>
+                  <FormLabel>Espécie do pet</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -254,7 +254,7 @@ export default function Page() {
               name="reason"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Reason for Appointment</FormLabel>
+                  <FormLabel>Razão para consulta</FormLabel>
                   <FormControl>
                     <Textarea {...field} />
                   </FormControl>
@@ -268,7 +268,7 @@ export default function Page() {
               name="pickupAtHome"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Pickup at Home</FormLabel>
+                  <FormLabel>Busca em domicílio?</FormLabel>
                   <FormControl>
                     <input
                       type="checkbox"
@@ -281,7 +281,7 @@ export default function Page() {
             />
 
             <Button type="submit" disabled={availableTimes.length === 0}>
-              Book Appointment
+              Agendar
             </Button>
           </form>
         </Form>
@@ -290,7 +290,7 @@ export default function Page() {
       <Dialog open={showAddressDialog} onOpenChange={setShowAddressDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Provide Address Details</DialogTitle>
+            <DialogTitle>Forneça as informações de endereço</DialogTitle>
           </DialogHeader>
           <Form {...form}>
             <form
@@ -302,7 +302,7 @@ export default function Page() {
                 name="zipCode"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Zip Code</FormLabel>
+                    <FormLabel>CEP</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
@@ -314,7 +314,7 @@ export default function Page() {
                 name="addressStreet"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Street</FormLabel>
+                    <FormLabel>Rua</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
@@ -326,7 +326,7 @@ export default function Page() {
                 name="addressNumber"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Number</FormLabel>
+                    <FormLabel>Número</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
@@ -338,14 +338,14 @@ export default function Page() {
                 name="addressComplement"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Complement</FormLabel>
+                    <FormLabel>Complemento</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
                   </FormItem>
                 )}
               />
-              <Button type="submit">Save Address</Button>
+              <Button type="submit">Salvar</Button>
             </form>
           </Form>
         </DialogContent>

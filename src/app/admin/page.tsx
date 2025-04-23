@@ -56,10 +56,10 @@ interface Appointment {
 
 const formSchema = zod.object({
   date: zod.date({
-    required_error: "Please select a date.",
+    required_error: "Por favor escolha uma data.",
   }),
   time: zod.string({
-    required_error: "Please select a time.",
+    required_error: "Por favor escolha um horário.",
   }),
 });
 
@@ -175,7 +175,7 @@ export default function Home() {
     });
 
     if (isDuplicate) {
-      alert("A time slot for this date and time already exists.");
+      alert("Um horário já existe para essa data e hora.");
       return;
     }
 
@@ -192,7 +192,7 @@ export default function Home() {
     await deleteTimeslot(id);
     fetchTimeslots();
 
-    alert("Time slot removed successfully.");
+    alert("Horário removido com sucesso.");
   };
 
   const availableTimeOptions = [
@@ -216,28 +216,28 @@ export default function Home() {
   return (
     <div className="container mx-auto py-10">
       <h1 className="text-3xl font-bold mb-6">
-        AgendaVet - Appointment Management
+        AgendaVet - Gerenciamento
       </h1>
 
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-semibold">Appointments</h2>
+        <h2 className="text-xl font-semibold">Agendamentos</h2>
         <div className="flex gap-2">
           <Dialog open={manageSlotOpen} onOpenChange={setManageSlotOpen}>
             <DialogTrigger asChild>
-              <Button variant="outline">Manage Time Slots</Button>
+              <Button variant="outline">Gerenciar horários</Button>
             </DialogTrigger>
             <DialogContent className="max-w-2xl">
               <DialogHeader>
-                <DialogTitle>Manage Available Time Slots</DialogTitle>
+                <DialogTitle>Gerenciamento de Horários</DialogTitle>
                 <DialogDescription>
-                  View and remove available time slots.
+                  Visualize, crie ou remova horários disponíveis para agendamentos.
                 </DialogDescription>
               </DialogHeader>
 
               <div className="max-h-[400px] overflow-y-auto">
                 {availableTimeSlots.length === 0 ? (
                   <div className="flex justify-center items-center h-20 border rounded-lg">
-                    <p className="text-gray-500">No available time slots.</p>
+                    <p className="text-gray-500">Sem horários disponíveis.</p>
                   </div>
                 ) : (
                   <div className="space-y-2">
@@ -265,7 +265,7 @@ export default function Home() {
                             size="sm"
                             onClick={() => handleDeleteTimeSlot(slot.id)}
                           >
-                            Remove
+                            Deletar
                           </Button>
                         </div>
                       ))}
@@ -277,13 +277,13 @@ export default function Home() {
 
           <Dialog open={addSlotOpen} onOpenChange={setAddSlotOpen}>
             <DialogTrigger asChild>
-              <Button>Add Time Slots</Button>
+              <Button>Adicionar horários</Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Add a new time slot</DialogTitle>
+                <DialogTitle>Adicionar um novo horário</DialogTitle>
                 <DialogDescription>
-                  Create a new time slot for appointments.
+                  Crie um novo horário para agendamentos.
                 </DialogDescription>
               </DialogHeader>
 
@@ -297,7 +297,7 @@ export default function Home() {
                     name="date"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Date</FormLabel>
+                        <FormLabel>Data</FormLabel>
                         <FormControl>
                           <Calendar
                             mode="single"
@@ -322,14 +322,14 @@ export default function Home() {
                     name="time"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Time</FormLabel>
+                        <FormLabel>Hora</FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Select a time" />
+                              <SelectValue placeholder="Selecione um horário" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -346,7 +346,7 @@ export default function Home() {
                   />
 
                   <DialogFooter>
-                    <Button type="submit">Add Slot</Button>
+                    <Button type="submit">Adicionar Horário</Button>
                   </DialogFooter>
                 </form>
               </Form>
@@ -357,7 +357,7 @@ export default function Home() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="md:col-span-1">
-          <h3 className="text-lg font-medium mb-3">Select Date</h3>
+          <h3 className="text-lg font-medium mb-3">Selecionar Data</h3>
           <Calendar
             mode="single"
             selected={selectedDate}
@@ -383,7 +383,7 @@ export default function Home() {
             className="border rounded-md"
           />
           <div className="mt-2 text-sm text-gray-500">
-            <p>Only dates with appointments are selectable</p>
+            <p>Apenas datas com agendamentos são selecionáveis</p>
           </div>
         </div>
 
@@ -396,11 +396,11 @@ export default function Home() {
 
           {isLoading ? (
             <div className="flex justify-center items-center h-40">
-              <p>Loading appointments...</p>
+              <p>Carregando agendamentos...</p>
             </div>
           ) : appointments.length === 0 ? (
             <div className="flex justify-center items-center h-40 border rounded-lg">
-              <p className="text-gray-500">No appointments for this date.</p>
+              <p className="text-gray-500">Sem agendamentos para essa data.</p>
             </div>
           ) : (
             <div className="space-y-4">

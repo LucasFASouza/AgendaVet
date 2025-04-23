@@ -28,7 +28,7 @@ export const ProfileBadge = async () => {
           type="submit"
           className="w-full flex items-center gap-2 justify-center"
         >
-          Sign in
+          Login
         </Button>
       </form>
     );
@@ -48,9 +48,9 @@ export const ProfileBadge = async () => {
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <div className="flex flex-col items-center gap-2 p-4 border-b">
-          <Link href="/">Home</Link>
-          <Link href="/my-appointments">My Appointments</Link>
-          {isAdmin && <Link href="/admin">Admin</Link>}
+          <Link href="/">Início</Link>
+          <Link href="/my-appointments">Meus agendamentos</Link>
+          {isAdmin && <Link href="/admin">Gerenciamento</Link>}
         </div>
         <SignOut />
       </DropdownMenuContent>

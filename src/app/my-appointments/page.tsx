@@ -51,10 +51,10 @@ export default function MyAppointmentsPage() {
 
   return (
     <div className="container mx-auto py-10">
-      <h1 className="text-3xl font-bold mb-6">My Appointments</h1>
+      <h1 className="text-3xl font-bold mb-6">Meus agendamentos</h1>
 
       {appointments.length === 0 ? (
-        <p>No appointments found.</p>
+        <p>Nenhum agendamento encontrado</p>
       ) : (
         <div className="space-y-4">
           {appointments.map((appointment) => (
@@ -82,7 +82,7 @@ export default function MyAppointmentsPage() {
                     handleCancel(appointment.id, appointment.timeslotId)
                   }
                 >
-                  Cancel
+                  Deletar
                 </Button>
               </CardFooter>
             </Card>
