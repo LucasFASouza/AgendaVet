@@ -48,7 +48,7 @@ export const ProfileBadge = async () => {
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <div className="flex flex-col items-center gap-2 p-4 border-b">
-          <Link href="/my-appointments">Home</Link>
+          <Link href="/">Home</Link>
           <Link href="/my-appointments">My Appointments</Link>
           {isAdmin && <Link href="/admin">Admin</Link>}
         </div>

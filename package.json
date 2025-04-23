@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "seed": "ts-node src/db/seeders/addTimeslotsSeeder.ts"
+    "seed": "dotenv -e .env -- tsx src/db/seeders/addTimeslotsSeeder.ts"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.8.0",
@@ -37,6 +37,7 @@
     "sonner": "^2.0.3",
     "tailwind-merge": "^3.2.0",
     "tailwindcss-animate": "^1.0.7",
+    "tsx": "^4.19.3",
     "tw-animate-css": "^1.2.5",
     "zod": "^3.24.2"
   },
@@ -47,6 +48,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "autoprefixer": "^10.4.21",
+    "dotenv-cli": "^7.4.4",
     "drizzle-kit": "^0.30.6",
     "eslint": "^9",
     "eslint-config-next": "15.3.0",
