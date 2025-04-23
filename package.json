@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "seed": "ts-node src/db/seeders/addTimeslotsSeeder.ts"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.8.0",
