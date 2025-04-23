@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { getUserInfo, saveUserAddress } from "@/actions/authActions";
 
-export function EditUserDialog() {
+export function EditUserDialog({ email }: { email: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -25,7 +25,7 @@ export function EditUserDialog() {
   useEffect(() => {
     if (isOpen) {
       (async () => {
-        const userInfo = await getUserInfo();
+        const userInfo = await getUserInfo(email);
         setFormData({
           name: userInfo.name || "",
           zipCode: userInfo.zipCode || "",
@@ -35,7 +35,7 @@ export function EditUserDialog() {
         });
       })();
     }
-  }, [isOpen]);
+  }, [isOpen, email]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -44,11 +44,11 @@ export function EditUserDialog() {
 
   const handleSubmit = async () => {
     await saveUserAddress(
-      formData.name,
       formData.zipCode,
       formData.addressStreet,
       formData.addressNumber,
-      formData.addressComplement
+      formData.addressComplement,
+      formData.name
     );
     setIsOpen(false);
   };

@@ -2,7 +2,7 @@ import { auth } from "@/auth";
 import { verifyAdminRole } from "@/actions/authActions";
 import { redirect } from "next/navigation";
 
-export default async function MyAppointmentsLayout({
+export default async function ProfileLayout({
   children,
   params,
 }: {

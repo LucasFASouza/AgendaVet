@@ -33,13 +33,7 @@ export async function verifyAdminRole() {
   }
 }
 
-export async function getUserInfo() {
-  const session = await auth();
-
-  if (!session || !session.user?.email) {
-    throw new Error("Usuário não autenticado");
-  }
-
+export async function getUserInfo(email: string) {
   const user = await db
     .select({
       name: users.name,
@@ -49,7 +43,7 @@ export async function getUserInfo() {
       addressComplement: users.addressComplement,
     })
     .from(users)
-    .where(eq(users.email, session.user.email))
+    .where(eq(users.email, email))
     .limit(1);
 
   if (!user.length) {

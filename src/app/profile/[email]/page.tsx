@@ -1,13 +1,20 @@
-import { getAppointments } from "@/actions/appointmentAction";
-import { AppointmentsList } from "@/components/profile/AppointmentsList";
+import { getUserAppointments } from "@/actions/appointmentAction";
+import { AppointmentsList } from "@/components/AppointmentsList";
 import { EditUserDialog } from "@/components/profile/EditUserDialog";
+import { auth } from "@/auth";
 
-export default async function MyAppointmentsPage() {
+export default async function ProfilePage({
+  params,
+}: {
+  params: { email: string };
+}) {
   const now = new Date();
-  const appointments = (await getAppointments()).map((appointment) => ({
-    ...appointment,
-    datetime: new Date(appointment.datetime),
-  }));
+  const appointments = (await getUserAppointments(params.email)).map(
+    (appointment) => ({
+      ...appointment,
+      datetime: new Date(appointment.datetime),
+    })
+  );
 
   const pastAppointments = appointments.filter(
     (appointment) => appointment.datetime < now
@@ -16,10 +23,14 @@ export default async function MyAppointmentsPage() {
     (appointment) => appointment.datetime >= now
   );
 
+  const session = await auth();
+
   return (
     <div className="container mx-auto py-10">
       <h1 className="text-3xl font-bold mb-6">Perfil</h1>
-      <EditUserDialog />
+      {session?.user?.email === params.email && (
+        <EditUserDialog email={params.email} />
+      )}
       <div className="mt-8 flex flex-col md:flex-row gap-4">
         <div className="md:w-1/2">
           <h2 className="text-2xl font-semibold mb-4">Histórico</h2>

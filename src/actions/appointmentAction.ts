@@ -47,6 +47,23 @@ export const getAppointments = async () => {
   return data;
 };
 
+export async function getUserAppointments(email: string) {
+  const data = await db
+    .select({
+      id: appointments.id,
+      timeslotId: appointments.timeslotId,
+      petName: appointments.petName,
+      species: appointments.species,
+      reason: appointments.reason,
+      datetime: timeslots.datetime,
+    })
+    .from(appointments)
+    .innerJoin(timeslots, eq(appointments.timeslotId, timeslots.id))
+    .innerJoin(users, eq(appointments.timeslotId, users.id))
+    .where(eq(users.email, email));
+  return data;
+}
+
 export const addAppointment = async (
   timeslotId: number,
   petName: string,

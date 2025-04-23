@@ -1,10 +1,9 @@
-import { format } from "date-fns";
 import { getAppointments, getTimeslots } from "@/actions/appointmentAction";
 import { ManageSlotsDialog } from "@/components/admin/ManageSlotsDialog";
-import { Calendar } from "@/components/ui/calendar";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AddSlotDialog } from "@/components/admin/AddSlotDialog";
 import { Suspense } from "react";
+import { AppointmentsList } from "@/components/AppointmentsList";
+import { CalendarClient } from "@/components/admin/CalendarClient";
 
 export default async function AdminPage() {
   const timeslots = await getTimeslots();
@@ -41,28 +40,7 @@ export default async function AdminPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="md:col-span-1">
           <h3 className="text-lg font-medium mb-3">Selecionar Data</h3>
-          <Calendar
-            mode="single"
-            disabled={(date) =>
-              !datesWithAppointments.some(
-                (appointmentDate) =>
-                  appointmentDate.getDate() === date.getDate() &&
-                  appointmentDate.getMonth() === date.getMonth() &&
-                  appointmentDate.getFullYear() === date.getFullYear()
-              )
-            }
-            modifiers={{
-              hasAppointment: datesWithAppointments,
-            }}
-            modifiersStyles={{
-              hasAppointment: {
-                backgroundColor: "#f0f9ff",
-                fontWeight: "bold",
-                borderColor: "#3b82f6",
-              },
-            }}
-            className="border rounded-md"
-          />
+          <CalendarClient datesWithAppointments={datesWithAppointments} />
           <div className="mt-2 text-sm text-gray-500">
             <p>Apenas datas com agendamentos são selecionáveis</p>
           </div>
@@ -73,31 +51,6 @@ export default async function AdminPage() {
           <AppointmentsList appointments={appointments} />
         </div>
       </div>
-    </div>
-  );
-}
-
-function AppointmentsList({ appointments }: { appointments: any[] }) {
-  return appointments.length === 0 ? (
-    <div className="flex justify-center items-center h-40 border rounded-lg">
-      <p className="text-gray-500">Sem agendamentos para essa data.</p>
-    </div>
-  ) : (
-    <div className="space-y-4">
-      {appointments.map((appointment) => (
-        <Card key={appointment.id}>
-          <CardHeader>
-            <CardTitle>{appointment.petName}</CardTitle>
-            <div className="text-sm text-gray-500">
-              {format(new Date(appointment.datetime!), "h:mm a")} -{" "}
-              {appointment.species}
-            </div>
-          </CardHeader>
-          <CardContent>
-            <p className="text-gray-700">{appointment.reason}</p>
-          </CardContent>
-        </Card>
-      ))}
     </div>
   );
 }

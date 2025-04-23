@@ -49,7 +49,7 @@ export const ProfileBadge = async () => {
       <DropdownMenuContent>
         <div className="flex flex-col items-center gap-2 p-4 border-b">
           <Link href="/">Início</Link>
-          <Link href="/profile">Perfil</Link>
+          <Link href={`/profile/${session?.user?.email}`}>Perfil</Link>
           {isAdmin && <Link href="/admin">Administrador</Link>}
         </div>
         <SignOut />
