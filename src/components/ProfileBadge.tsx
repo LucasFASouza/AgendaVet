@@ -11,6 +11,7 @@ import { AvatarFallback } from "@radix-ui/react-avatar";
 import { Button } from "@/components/ui/button";
 import { signIn } from "@/auth";
 import { auth } from "@/auth";
+import { verifyAdminRole } from "@/actions/authActions";
 
 export const ProfileBadge = async () => {
   const session = await auth();
@@ -33,6 +34,8 @@ export const ProfileBadge = async () => {
     );
   }
 
+  const isAdmin = await verifyAdminRole();
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
@@ -47,6 +50,7 @@ export const ProfileBadge = async () => {
         <div className="flex flex-col items-center gap-2 p-4 border-b">
           <Link href="/my-appointments">Home</Link>
           <Link href="/my-appointments">My Appointments</Link>
+          {isAdmin && <Link href="/admin">Admin</Link>}
         </div>
         <SignOut />
       </DropdownMenuContent>
