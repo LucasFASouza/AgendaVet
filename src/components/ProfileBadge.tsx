@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import { SignOut } from "@/components/SignOut";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -43,6 +44,10 @@ export const ProfileBadge = async () => {
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
+        <div className="flex flex-col items-center gap-2 p-4 border-b">
+          <Link href="/my-appointments">Home</Link>
+          <Link href="/my-appointments">My Appointments</Link>
+        </div>
         <SignOut />
       </DropdownMenuContent>
     </DropdownMenu>

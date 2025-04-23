@@ -33,7 +33,17 @@ export const updateTimeslotAvailability = async (
 };
 
 export const getAppointments = async () => {
-  const data = await db.select().from(appointments);
+  const data = await db
+    .select({
+      id: appointments.id,
+      timeslotId: appointments.timeslotId,
+      petName: appointments.petName,
+      species: appointments.species,
+      reason: appointments.reason,
+      datetime: timeslots.datetime,
+    })
+    .from(appointments)
+    .innerJoin(timeslots, eq(appointments.timeslotId, timeslots.id));
   return data;
 };
 

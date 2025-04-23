@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ProfileBadge } from "@/components/ProfileBadge";
 import { Suspense } from "react";
+import { AppProviders } from "@/app/_providers";
 import { Skeleton } from "@/components/ui/skeleton";
 import "./globals.css";
 
@@ -27,15 +28,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <Suspense fallback={<Skeleton className="size-8 rounded-full" />}>
-          <ProfileBadge />
-        </Suspense>
+      <AppProviders>
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        >
+          <Suspense fallback={<Skeleton className="size-8 rounded-full" />}>
+            <ProfileBadge />
+          </Suspense>
 
-        <main className="px-6 pb-24 flex-grow">{children}</main>
-      </body>
+          <main className="px-6 pb-24 flex-grow">{children}</main>
+        </body>
+      </AppProviders>
     </html>
   );
 }
