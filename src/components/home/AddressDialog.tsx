@@ -19,7 +19,6 @@ import {
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useSession } from "next-auth/react";
 
 const formSchema = z.object({
   zipCode: z.string().min(1, "CEP é obrigatório."),
