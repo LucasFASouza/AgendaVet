@@ -12,8 +12,19 @@ export default function AdminDashboard({
   appointments,
   datesWithAppointments,
 }: {
-  timeslots: any[];
-  appointments: any[];
+  timeslots: Array<{
+    id: number;
+    datetime: Date | string;
+    isAvailable: boolean;
+  }>;
+  appointments: Array<{
+    id: number;
+    timeslotId: number;
+    petName: string;
+    species: string;
+    reason: string;
+    datetime: Date | string;
+  }>;
   datesWithAppointments: string[];
 }) {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
@@ -63,7 +74,18 @@ export default function AdminDashboard({
   );
 }
 
-function AppointmentsList({ appointments }: { appointments: any[] }) {
+function AppointmentsList({
+  appointments,
+}: {
+  appointments: Array<{
+    id: number;
+    timeslotId: number;
+    petName: string;
+    species: string;
+    reason: string;
+    datetime: Date | string;
+  }>;
+}) {
   return appointments.length === 0 ? (
     <div className="flex justify-center items-center h-40 border rounded-lg">
       <p className="text-gray-500">Sem agendamentos para essa data.</p>

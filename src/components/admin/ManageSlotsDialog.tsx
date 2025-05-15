@@ -11,7 +11,15 @@ import {
 } from "@/components/ui/dialog";
 import { format } from "date-fns";
 
-export function ManageSlotsDialog({ timeslots }: { timeslots: any[] }) {
+export function ManageSlotsDialog({
+  timeslots,
+}: {
+  timeslots: Array<{
+    id: number;
+    datetime: Date | string;
+    isAvailable: boolean;
+  }>;
+}) {
   const [open, setOpen] = useState(false);
 
   const handleDeleteTimeSlot = async (id: number) => {

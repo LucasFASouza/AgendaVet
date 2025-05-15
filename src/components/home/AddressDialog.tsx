@@ -28,7 +28,6 @@ const formSchema = z.object({
   addressComplement: z.string().optional(),
 });
 
-// Accept open, setOpen, and onSaved as props
 export function AddressDialog({
   open,
   setOpen,
@@ -38,8 +37,6 @@ export function AddressDialog({
   setOpen: (open: boolean) => void;
   onSaved?: () => void;
 }) {
-  const { data: session } = useSession();
-
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
