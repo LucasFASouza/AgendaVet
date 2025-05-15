@@ -1,4 +1,3 @@
-import { AddressDialog } from "@/components/home/AddressDialog";
 import { AppointmentForm } from "@/components/home/AppointmentForm";
 import { Suspense } from "react";
 
@@ -11,7 +10,6 @@ export default function Page() {
           <AppointmentForm />
         </Suspense>
       </div>
-      <AddressDialog />
     </div>
   );
 }

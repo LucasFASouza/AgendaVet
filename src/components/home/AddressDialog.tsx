@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -29,8 +28,16 @@ const formSchema = z.object({
   addressComplement: z.string().optional(),
 });
 
-export function AddressDialog() {
-  const [open, setOpen] = useState(false);
+// Accept open, setOpen, and onSaved as props
+export function AddressDialog({
+  open,
+  setOpen,
+  onSaved,
+}: {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  onSaved?: () => void;
+}) {
   const { data: session } = useSession();
 
   const form = useForm({
@@ -45,13 +52,13 @@ export function AddressDialog() {
 
   const saveAddress = async (values: z.infer<typeof formSchema>) => {
     await saveUserAddress(
-      session?.user?.email || "",
       values.zipCode,
       values.addressStreet,
       values.addressNumber,
       values.addressComplement
     );
     setOpen(false);
+    if (onSaved) onSaved();
   };
 
   return (

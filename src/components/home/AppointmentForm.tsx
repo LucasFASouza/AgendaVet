@@ -25,6 +25,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useSession } from "next-auth/react";
+import { AddressDialog } from "@/components/home/AddressDialog";
+import { getUserInfo } from "@/actions/authActions";
 
 const formSchema = z.object({
   date: z.date({ required_error: "Por favor selecione uma data" }),
@@ -42,6 +44,12 @@ export function AppointmentForm() {
   const [availableDates, setAvailableDates] = useState<Date[]>([]);
   const [availableTimes, setAvailableTimes] = useState<string[]>([]);
   const { data: session } = useSession();
+
+  // Address dialog state
+  const [addressDialogOpen, setAddressDialogOpen] = useState(false);
+  const [pendingAppointment, setPendingAppointment] = useState<z.infer<
+    typeof formSchema
+  > | null>(null);
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -99,7 +107,33 @@ export function AppointmentForm() {
     form.setValue("time", ""); // Reset time selection
   };
 
+  // Intercept pickupAtHome change
+  const handlePickupAtHomeChange = async (checked: boolean) => {
+    form.setValue("pickupAtHome", checked);
+    if (checked) {
+      const user = await getUserInfo();
+      if (!user.zipCode || !user.addressStreet || !user.addressNumber) {
+        setAddressDialogOpen(true);
+      }
+    }
+  };
+
+  // Main submit logic
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    if (values.pickupAtHome) {
+      const user = await getUserInfo();
+      if (!user.zipCode || !user.addressStreet || !user.addressNumber) {
+        setPendingAppointment(values);
+        setAddressDialogOpen(true);
+        return;
+      }
+    }
+
+    await submitAppointment(values);
+  };
+
+  // Helper to submit appointment
+  const submitAppointment = async (values: z.infer<typeof formSchema>) => {
     const selectedSlot = timeslots.find(
       (slot) =>
         new Date(slot.datetime).toDateString() ===
@@ -133,123 +167,141 @@ export function AppointmentForm() {
     }
   };
 
+  // Called when address dialog is submitted
+  const handleAddressSaved = async () => {
+    setAddressDialogOpen(false);
+    if (pendingAppointment) {
+      await submitAppointment(pendingAppointment);
+      setPendingAppointment(null);
+    }
+  };
+
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <FormField
-          control={form.control}
-          name="date"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Selecione uma data</FormLabel>
-              <FormControl>
-                <Calendar
-                  mode="single"
-                  selected={field.value}
-                  onSelect={(date) => {
-                    field.onChange(date);
-                    handleDateChange(date);
-                  }}
-                  disabled={(date) =>
-                    !availableDates.some(
-                      (availableDate) =>
-                        availableDate.toDateString() === date.toDateString()
-                    )
-                  }
-                  className="border rounded-md"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="time"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Selecione um horário</FormLabel>
-              <Select
-                onValueChange={field.onChange}
-                defaultValue={field.value}
-                disabled={availableTimes.length === 0}
-              >
+    <>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <FormField
+            control={form.control}
+            name="date"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Selecione uma data</FormLabel>
                 <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione um horário" />
-                  </SelectTrigger>
+                  <Calendar
+                    mode="single"
+                    selected={field.value}
+                    onSelect={(date) => {
+                      field.onChange(date);
+                      handleDateChange(date);
+                    }}
+                    disabled={(date) =>
+                      !availableDates.some(
+                        (availableDate) =>
+                          availableDate.toDateString() === date.toDateString()
+                      )
+                    }
+                    className="border rounded-md"
+                  />
                 </FormControl>
-                <SelectContent>
-                  {availableTimes.map((time) => (
-                    <SelectItem key={time} value={time}>
-                      {time}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="petName"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Nome do pet</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="species"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Espécie do pet</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="reason"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Razão para consulta</FormLabel>
-              <FormControl>
-                <Textarea {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="pickupAtHome"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Busca em domicílio?</FormLabel>
-              <FormControl>
-                <input
-                  type="checkbox"
-                  checked={field.value}
-                  onChange={(e) => field.onChange(e.target.checked)}
-                />
-              </FormControl>
-            </FormItem>
-          )}
-        />
-        <Button type="submit" disabled={availableTimes.length === 0}>
-          Agendar
-        </Button>
-      </form>
-    </Form>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="time"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Selecione um horário</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  disabled={availableTimes.length === 0}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione um horário" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {availableTimes.map((time) => (
+                      <SelectItem key={time} value={time}>
+                        {time}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="petName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Nome do pet</FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="species"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Espécie do pet</FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="reason"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Razão para consulta</FormLabel>
+                <FormControl>
+                  <Textarea {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="pickupAtHome"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Busca em domicílio?</FormLabel>
+                <FormControl>
+                  <input
+                    type="checkbox"
+                    checked={field.value}
+                    onChange={async (e) => {
+                      await handlePickupAtHomeChange(e.target.checked);
+                    }}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <Button type="submit" disabled={availableTimes.length === 0}>
+            Agendar
+          </Button>
+        </form>
+      </Form>
+      <AddressDialog
+        open={addressDialogOpen}
+        setOpen={setAddressDialogOpen}
+        onSaved={handleAddressSaved}
+      />
+    </>
   );
 }
