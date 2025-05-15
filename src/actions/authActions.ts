@@ -32,3 +32,59 @@ export async function verifyAdminRole() {
     return true;
   }
 }
+
+export async function getUserInfo() {
+  const session = await auth();
+
+  if (!session || !session.user?.email) {
+    throw new Error("Usuário não autenticado");
+  }
+
+  const user = await db
+    .select({
+      name: users.name,
+      zipCode: users.zipCode,
+      addressStreet: users.addressStreet,
+      addressNumber: users.addressNumber,
+      addressComplement: users.addressComplement,
+    })
+    .from(users)
+    .where(eq(users.email, session.user.email))
+    .limit(1);
+
+  if (!user.length) {
+    throw new Error("Usuário não encontrado");
+  }
+
+  return user[0];
+}
+
+export async function saveUserAddress(
+  zipCode: string,
+  addressStreet: string,
+  addressNumber: string,
+  addressComplement?: string,
+  name?: string
+) {
+  const session = await auth();
+
+  if (!session || !session.user?.email) {
+    throw new Error("Usuário não autenticado");
+  }
+
+  const updateData: Record<string, string | undefined> = {
+    zipCode,
+    addressStreet,
+    addressNumber,
+    addressComplement,
+  };
+
+  if (name) {
+    updateData.name = name;
+  }
+
+  await db
+    .update(users)
+    .set(updateData)
+    .where(eq(users.email, session.user.email));
+}

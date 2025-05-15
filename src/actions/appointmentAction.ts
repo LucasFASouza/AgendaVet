@@ -2,7 +2,7 @@
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { db } from "@/db/drizzle";
-import { timeslots, appointments } from "@/db/schema";
+import { timeslots, appointments, users } from "@/db/schema";
 
 export const getTimeslots = async () => {
   const data = await db.select().from(timeslots);
@@ -51,13 +51,28 @@ export const addAppointment = async (
   timeslotId: number,
   petName: string,
   species: string,
-  reason: string
+  reason: string,
+  pickupAtHome: boolean,
+  userEmail: string
 ) => {
+  if (pickupAtHome) {
+    const user = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, userEmail))
+      .limit(1);
+
+    if (!user.length || !user[0].zipCode) {
+      throw new Error("User must provide address details for home pickup.");
+    }
+  }
+
   await db.insert(appointments).values({
     timeslotId,
     petName,
     species,
     reason,
+    pickupAtHome,
   });
 
   await updateTimeslotAvailability(timeslotId, false);

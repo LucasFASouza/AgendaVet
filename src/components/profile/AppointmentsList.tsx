@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Card,
   CardContent,
@@ -8,13 +8,8 @@ import {
   CardTitle,
   CardFooter,
 } from "@/components/ui/card";
-import {
-  getAppointments,
-  deleteAppointment,
-} from "@/actions/appointmentAction";
+import { deleteAppointment } from "@/actions/appointmentAction";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
 
 interface Appointment {
   id: number;
@@ -22,27 +17,18 @@ interface Appointment {
   petName: string;
   species: string;
   reason: string;
-  datetime?: Date;
+  datetime: Date;
 }
 
-export default function MyAppointmentsPage() {
-  const [appointments, setAppointments] = useState<Appointment[]>([]);
-  const router = useRouter();
-
-  const { data: session } = useSession();
-
-  if (!session?.user) {
-    router.push("/");
-  }
-
-  useEffect(() => {
-    const fetchAppointments = async () => {
-      const data = await getAppointments();
-      setAppointments(data as Appointment[]);
-    };
-
-    fetchAppointments();
-  }, []);
+export function AppointmentsList({
+  appointments: initialAppointments,
+  cancel = false,
+}: {
+  appointments: Appointment[];
+  cancel?: boolean;
+}) {
+  const [appointments, setAppointments] =
+    useState<Appointment[]>(initialAppointments);
 
   const handleCancel = async (id: number, timeslotId: number) => {
     await deleteAppointment(id, timeslotId);
@@ -50,18 +36,18 @@ export default function MyAppointmentsPage() {
   };
 
   return (
-    <div className="container mx-auto py-10">
-      <h1 className="text-3xl font-bold mb-6">My Appointments</h1>
-
+    <div className="container mx-auto">
       {appointments.length === 0 ? (
-        <p>No appointments found.</p>
+        <p className="text-sm text-muted-foreground">
+          Nenhum agendamento encontrado
+        </p>
       ) : (
         <div className="space-y-4">
           {appointments.map((appointment) => (
             <Card key={appointment.id}>
               <CardHeader>
                 <CardTitle>
-                  {appointment.datetime?.toLocaleString("en-US", {
+                  {appointment.datetime.toLocaleString("en-US", {
                     month: "long",
                     day: "numeric",
                     hour: "2-digit",
@@ -75,15 +61,18 @@ export default function MyAppointmentsPage() {
               <CardContent>
                 <p className="text-gray-700">{appointment.reason}</p>
               </CardContent>
+
               <CardFooter>
-                <Button
-                  variant="destructive"
-                  onClick={() =>
-                    handleCancel(appointment.id, appointment.timeslotId)
-                  }
-                >
-                  Cancel
-                </Button>
+                {cancel && (
+                  <Button
+                    variant="destructive"
+                    onClick={() =>
+                      handleCancel(appointment.id, appointment.timeslotId)
+                    }
+                  >
+                    Deletar
+                  </Button>
+                )}
               </CardFooter>
             </Card>
           ))}
