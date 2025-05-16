@@ -42,6 +42,25 @@ export function EditUserDialog() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // Handler to fetch address from ViaCEP
+  const handleCepBlur = async (e: React.FocusEvent<HTMLInputElement>) => {
+    const cep = e.target.value.replace(/\D/g, "");
+    if (cep.length !== 8) return;
+    try {
+      const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+      if (!res.ok) return;
+      const data = await res.json();
+      if (data.erro) return;
+      setFormData((prev) => ({
+        ...prev,
+        addressStreet: data.logradouro || "",
+        addressComplement: data.complemento || "",
+      }));
+    } catch (err) {
+      // Optionally handle error
+    }
+  };
+
   const handleSubmit = async () => {
     await saveUserAddress(
       formData.name,
@@ -73,12 +92,17 @@ export function EditUserDialog() {
               name="zipCode"
               placeholder="CEP"
               value={formData.zipCode}
-              onChange={handleChange}
+              onChange={(e) => {
+                // Only allow numbers and up to 8 digits
+                const value = e.target.value.replace(/\D/g, "").slice(0, 8);
+                handleChange({ ...e, target: { ...e.target, value } });
+              }}
+              onBlur={handleCepBlur}
               className="mb-4"
             />
             <Input
               name="addressStreet"
-              placeholder="Rua"
+              placeholder="Logradouro"
               value={formData.addressStreet}
               onChange={handleChange}
               className="mb-4"
