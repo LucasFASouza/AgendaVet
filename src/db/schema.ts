@@ -23,6 +23,9 @@ export const appointments = pgTable("appointments", {
   species: text("species").notNull(),
   reason: text("reason").notNull(),
   pickupAtHome: boolean("pickup_at_home").default(false).notNull(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
 });
 
 export const users = pgTable("user", {

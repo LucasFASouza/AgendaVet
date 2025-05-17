@@ -6,6 +6,8 @@ import { AddSlotDialog } from "@/components/admin/AddSlotDialog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { format } from "date-fns";
 import { Suspense } from "react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export default function AdminDashboard({
   timeslots,
@@ -84,28 +86,48 @@ function AppointmentsList({
     species: string;
     reason: string;
     datetime: Date | string;
+    userEmail?: string;
+    pickupAtHome?: boolean;
   }>;
 }) {
+  // Helper to extract email prefix
+  const getEmailPrefix = (email?: string) => {
+    if (!email) return "";
+    return email.split("@")[0];
+  };
+
   return appointments.length === 0 ? (
     <div className="flex justify-center items-center h-40 border rounded-lg">
       <p className="text-gray-500">Sem agendamentos para essa data.</p>
     </div>
   ) : (
     <div className="space-y-4">
-      {appointments.map((appointment) => (
-        <Card key={appointment.id}>
-          <CardHeader>
-            <CardTitle>{appointment.petName}</CardTitle>
-            <div className="text-sm text-gray-500">
-              {format(new Date(appointment.datetime!), "h:mm a")} -{" "}
-              {appointment.species}
-            </div>
-          </CardHeader>
-          <CardContent>
-            <p className="text-gray-700">{appointment.reason}</p>
-          </CardContent>
-        </Card>
-      ))}
+      {appointments.map((appointment) => {
+        const emailPrefix = getEmailPrefix(appointment.userEmail);
+        return (
+          <Card key={appointment.id}>
+            <CardHeader>
+              <CardTitle>{appointment.petName}</CardTitle>
+              <div className="text-sm text-gray-500">
+                {format(new Date(appointment.datetime!), "h:mm a")} - {appointment.species}
+                {appointment.pickupAtHome && (
+                  <span className="ml-2 px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs">Busca em domicílio</span>
+                )}
+              </div>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-700">{appointment.reason}</p>
+                <div className="mt-4">
+                  <Link href={`/admin/users/${encodeURIComponent(emailPrefix)}`} passHref legacyBehavior>
+                    <Button variant="outline" asChild>
+                      <a>Ver perfil do usuário</a>
+                    </Button>
+                  </Link>
+                </div>
+            </CardContent>
+          </Card>
+        );
+      })}
     </div>
   );
 }
