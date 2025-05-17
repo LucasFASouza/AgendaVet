@@ -5,12 +5,10 @@ import { users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 
-export default async function AdminUserProfilePage({
-  params,
-}: {
+export default async function AdminUserProfilePage(props: {
   params: { email: string };
 }) {
-  const { email } = params;
+  const { email } = props.params;
   if (!email) return notFound();
 
   // Fetch user info by email
