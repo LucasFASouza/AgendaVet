@@ -126,9 +126,8 @@ function AppointmentsList({
               <div className="mt-4">
                 <Link
                   href={`/admin/users/${encodeURIComponent(emailPrefix)}`}
-                  passHref
                 >
-                  <Button variant="outline" asChild>
+                  <Button variant="outline">
                     Ver perfil do usuário
                   </Button>
                 </Link>
