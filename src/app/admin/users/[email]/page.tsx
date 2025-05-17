@@ -5,15 +5,15 @@ import { users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 
-export default async function AdminUserProfilePage({
-  params,
-}: {
-  params: { email: string };
-}) {
+export default async function AdminUserProfilePage(
+  props: {
+    params: Promise<{ email: string }>;
+  }
+) {
+  const params = await props.params;
   const { email } = params;
   if (!email) return notFound();
 
-  // Fetch user info by email
   const userArr = await db
     .select()
     .from(users)
