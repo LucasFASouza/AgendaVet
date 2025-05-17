@@ -74,11 +74,19 @@ export function AppointmentForm() {
       );
       setTimeslots(formattedSlots);
 
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
       const uniqueDates = [
         ...new Set(
           formattedSlots
             .filter((slot) => slot.isAvailable)
-            .map((slot) => new Date(slot.datetime).toDateString())
+            .map((slot) => {
+              const d = new Date(slot.datetime);
+              d.setHours(0, 0, 0, 0);
+              return d;
+            })
+            .filter((date) => date >= today)
+            .map((date) => date.toDateString())
         ),
       ].map((dateString) => new Date(dateString));
       setAvailableDates(uniqueDates);
@@ -187,21 +195,23 @@ export function AppointmentForm() {
               <FormItem>
                 <FormLabel>Selecione uma data</FormLabel>
                 <FormControl>
-                  <Calendar
-                    mode="single"
-                    selected={field.value}
-                    onSelect={(date) => {
-                      field.onChange(date);
-                      handleDateChange(date);
-                    }}
-                    disabled={(date) =>
-                      !availableDates.some(
-                        (availableDate) =>
-                          availableDate.toDateString() === date.toDateString()
-                      )
-                    }
-                    className="border rounded-md"
-                  />
+                  <div className="inline-block rounded-md border">
+                    <Calendar
+                      mode="single"
+                      selected={field.value}
+                      onSelect={(date) => {
+                        field.onChange(date);
+                        handleDateChange(date);
+                      }}
+                      disabled={(date) =>
+                        !availableDates.some(
+                          (availableDate) =>
+                            availableDate.toDateString() === date.toDateString()
+                        )
+                      }
+                      className="!border-0"
+                    />
+                  </div>
                 </FormControl>
                 <FormMessage />
               </FormItem>

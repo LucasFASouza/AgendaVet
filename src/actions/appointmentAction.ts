@@ -43,6 +43,7 @@ export const getAppointments = async () => {
       datetime: timeslots.datetime,
       pickupAtHome: appointments.pickupAtHome,
       userEmail: users.email,
+      userName: users.name,
     })
     .from(appointments)
     .innerJoin(timeslots, eq(appointments.timeslotId, timeslots.id))

@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import { AppProviders } from "@/app/_providers";
 import { Skeleton } from "@/components/ui/skeleton";
 import "./globals.css";
+import Link from "next/link";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,11 +33,17 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
-          <Suspense fallback={<Skeleton className="size-8 rounded-full" />}>
-            <ProfileBadge />
-          </Suspense>
-
-          <main className="px-6 pb-24 flex-grow">{children}</main>
+          <header className="w-full flex justify-between items-center px-6 pt-4 max-w-4xl mx-auto">
+            <Link href="/" className="text-2xl font-bold">
+              Agenda Vet
+            </Link>
+            <Suspense fallback={<Skeleton className="size-8 rounded-full" />}>
+              <ProfileBadge />
+            </Suspense>
+          </header>
+          <main className="px-6 pb-24 flex-grow max-w-4xl mx-auto w-full">
+            {children}
+          </main>
         </body>
       </AppProviders>
     </html>
