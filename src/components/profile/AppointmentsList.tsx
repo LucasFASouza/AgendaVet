@@ -17,7 +17,7 @@ interface Appointment {
   petName: string;
   species: string;
   reason: string;
-  datetime: Date;
+  datetime: Date | string;
 }
 
 export function AppointmentsList({
@@ -47,7 +47,7 @@ export function AppointmentsList({
             <Card key={appointment.id}>
               <CardHeader>
                 <CardTitle>
-                  {appointment.datetime.toLocaleString("en-US", {
+                  {new Date(appointment.datetime).toLocaleString("en-US", {
                     month: "long",
                     day: "numeric",
                     hour: "2-digit",

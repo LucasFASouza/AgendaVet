@@ -41,9 +41,12 @@ export const getAppointments = async () => {
       species: appointments.species,
       reason: appointments.reason,
       datetime: timeslots.datetime,
+      pickupAtHome: appointments.pickupAtHome,
+      userEmail: users.email,
     })
     .from(appointments)
-    .innerJoin(timeslots, eq(appointments.timeslotId, timeslots.id));
+    .innerJoin(timeslots, eq(appointments.timeslotId, timeslots.id))
+    .innerJoin(users, eq(appointments.userId, users.id));
   return data;
 };
 
@@ -55,16 +58,18 @@ export const addAppointment = async (
   pickupAtHome: boolean,
   userEmail: string
 ) => {
-  if (pickupAtHome) {
-    const user = await db
-      .select()
-      .from(users)
-      .where(eq(users.email, userEmail))
-      .limit(1);
+  const user = await db
+    .select()
+    .from(users)
+    .where(eq(users.email, userEmail))
+    .limit(1);
 
-    if (!user.length || !user[0].zipCode) {
-      throw new Error("User must provide address details for home pickup.");
-    }
+  if (!user.length) {
+    throw new Error("User not found.");
+  }
+
+  if (pickupAtHome && !user[0].zipCode) {
+    throw new Error("User must provide address details for home pickup.");
   }
 
   await db.insert(appointments).values({
@@ -73,6 +78,7 @@ export const addAppointment = async (
     species,
     reason,
     pickupAtHome,
+    userId: user[0].id, // <-- include userId
   });
 
   await updateTimeslotAvailability(timeslotId, false);
@@ -104,4 +110,24 @@ export const updateAppointment = async (
     .where(eq(appointments.id, id));
 
   revalidatePath("/");
+};
+
+// IMPORTANT: Make sure you have run a migration to add the `user_id` column to the `appointments` table.
+
+export const getAppointmentsByEmail = async (emailPrefix: string) => {
+  const email = `${emailPrefix}@gmail.com`;
+  const data = await db
+    .select({
+      id: appointments.id,
+      timeslotId: appointments.timeslotId,
+      petName: appointments.petName,
+      species: appointments.species,
+      reason: appointments.reason,
+      datetime: timeslots.datetime,
+    })
+    .from(appointments)
+    .innerJoin(timeslots, eq(appointments.timeslotId, timeslots.id))
+    .innerJoin(users, eq(appointments.userId, users.id))
+    .where(eq(users.email, email));
+  return data;
 };

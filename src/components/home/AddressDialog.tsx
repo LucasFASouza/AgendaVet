@@ -22,7 +22,7 @@ import { Input } from "@/components/ui/input";
 
 const formSchema = z.object({
   zipCode: z.string().min(1, "CEP é obrigatório."),
-  addressStreet: z.string().min(1, "Rua é obrigatória."),
+  addressStreet: z.string().min(1, "Logradouro é obrigatória."),
   addressNumber: z.string().min(1, "Número é obrigatório."),
   addressComplement: z.string().optional(),
 });
@@ -45,6 +45,22 @@ export function AddressDialog({
       addressComplement: "",
     },
   });
+
+  // Handler to fetch address from ViaCEP
+  const handleCepBlur = async (e: React.FocusEvent<HTMLInputElement>) => {
+    const cep = e.target.value.replace(/\D/g, "");
+    if (cep.length !== 8) return;
+    try {
+      const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+      if (!res.ok) return;
+      const data = await res.json();
+      if (data.erro) return;
+      form.setValue("addressStreet", data.logradouro || "");
+      form.setValue("addressComplement", data.complemento || "");
+    } catch (err) {
+      // Optionally handle error
+    }
+  };
 
   const saveAddress = async (values: z.infer<typeof formSchema>) => {
     await saveUserAddress(
@@ -72,7 +88,20 @@ export function AddressDialog({
                 <FormItem>
                   <FormLabel>CEP</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input
+                      {...field}
+                      onChange={(e) => {
+                        // Only allow numbers and up to 8 digits
+                        const value = e.target.value
+                          .replace(/\D/g, "")
+                          .slice(0, 8);
+                        field.onChange(value);
+                      }}
+                      onBlur={(e) => {
+                        field.onBlur();
+                        handleCepBlur(e);
+                      }}
+                    />
                   </FormControl>
                 </FormItem>
               )}
@@ -82,7 +111,7 @@ export function AddressDialog({
               name="addressStreet"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Rua</FormLabel>
+                  <FormLabel>Logradouro</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
