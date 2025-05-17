@@ -127,10 +127,9 @@ function AppointmentsList({
                 <Link
                   href={`/admin/users/${encodeURIComponent(emailPrefix)}`}
                   passHref
-                  legacyBehavior
                 >
                   <Button variant="outline" asChild>
-                    <a>Ver perfil do usuário</a>
+                    Ver perfil do usuário
                   </Button>
                 </Link>
               </div>

@@ -18,8 +18,14 @@ export default async function AdminPage() {
       }
       return unique;
     }, [] as Date[])
-    .map((date) => date.toISOString()); // serialize dates
-
+    .map(
+      (date) =>
+        `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
+          2,
+          "0"
+        )}-${String(date.getDate()).padStart(2, "0")}`
+  );
+  
   return (
     <AdminDashboard
       timeslots={timeslots}
@@ -28,4 +34,3 @@ export default async function AdminPage() {
     />
   );
 }
-

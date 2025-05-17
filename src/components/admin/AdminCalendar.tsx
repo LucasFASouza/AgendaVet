@@ -16,9 +16,9 @@ export default function AdminCalendar({
   selectedDate?: Date;
   onSelectDate?: (date: Date | undefined) => void;
 }) {
-  const appointmentDates = datesWithAppointments.map((iso) => {
-    const d = new Date(iso);
-    return normalizeDate(d);
+  const appointmentDates = datesWithAppointments.map((dateStr) => {
+    const [year, month, day] = dateStr.split("-").map(Number);
+    return new Date(year, month - 1, day);
   });
 
   return (
