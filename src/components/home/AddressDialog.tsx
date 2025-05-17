@@ -58,8 +58,7 @@ export function AddressDialog({
       form.setValue("addressStreet", data.logradouro || "");
       form.setValue("addressComplement", data.complemento || "");
     } catch (err) {
-      // Optionally handle error
-    }
+      console.error("Error fetching address:", err);}
   };
 
   const saveAddress = async (values: z.infer<typeof formSchema>) => {

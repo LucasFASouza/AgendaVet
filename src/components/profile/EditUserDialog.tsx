@@ -57,7 +57,7 @@ export function EditUserDialog() {
         addressComplement: data.complemento || "",
       }));
     } catch (err) {
-      // Optionally handle error
+      console.error("Error fetching address:", err);
     }
   };
 
