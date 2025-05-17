@@ -4,9 +4,7 @@ import { Calendar } from "@/components/ui/calendar";
 
 // Helper to normalize a date to midnight UTC
 function normalizeDate(date: Date) {
-  return new Date(
-    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
-  );
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
 }
 
 export default function AdminCalendar({
@@ -18,7 +16,6 @@ export default function AdminCalendar({
   selectedDate?: Date;
   onSelectDate?: (date: Date | undefined) => void;
 }) {
-  // Convert ISO strings back to normalized Date objects (midnight UTC)
   const appointmentDates = datesWithAppointments.map((iso) => {
     const d = new Date(iso);
     return normalizeDate(d);
