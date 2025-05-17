@@ -5,13 +5,11 @@ import { users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 
-interface AdminUserProfilePageProps {
-  params: { email: string };
-}
-
 export default async function AdminUserProfilePage({
   params,
-}: AdminUserProfilePageProps) {
+}: {
+  params: { email: string };
+}) {
   const { email } = params;
   if (!email) return notFound();
 
