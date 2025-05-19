@@ -2,7 +2,6 @@
 import React from "react";
 import { Calendar } from "@/components/ui/calendar";
 
-// Helper to normalize a date to midnight UTC
 function normalizeDate(date: Date) {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate());
 }

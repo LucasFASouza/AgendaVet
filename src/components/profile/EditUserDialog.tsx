@@ -42,7 +42,6 @@ export function EditUserDialog() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Handler to fetch address from ViaCEP
   const handleCepBlur = async (e: React.FocusEvent<HTMLInputElement>) => {
     const cep = e.target.value.replace(/\D/g, "");
     if (cep.length !== 8) return;
@@ -93,7 +92,6 @@ export function EditUserDialog() {
               placeholder="CEP"
               value={formData.zipCode}
               onChange={(e) => {
-                // Only allow numbers and up to 8 digits
                 const value = e.target.value.replace(/\D/g, "").slice(0, 8);
                 handleChange({ ...e, target: { ...e.target, value } });
               }}

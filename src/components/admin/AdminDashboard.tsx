@@ -91,7 +91,6 @@ function AppointmentsList({
     pickupAtHome?: boolean;
   }>;
 }) {
-  // Helper to extract email prefix
   const getEmailPrefix = (email?: string) => {
     if (!email) return "";
     return email.split("@")[0];

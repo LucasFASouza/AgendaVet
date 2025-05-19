@@ -45,7 +45,6 @@ export function AppointmentForm() {
   const [availableTimes, setAvailableTimes] = useState<string[]>([]);
   const { data: session } = useSession();
 
-  // Address dialog state
   const [addressDialogOpen, setAddressDialogOpen] = useState(false);
   const [pendingAppointment, setPendingAppointment] = useState<z.infer<
     typeof formSchema
@@ -69,7 +68,7 @@ export function AppointmentForm() {
       const formattedSlots = slots.map(
         (slot: { id: number; datetime: Date; isAvailable: boolean }) => ({
           ...slot,
-          datetime: slot.datetime.toISOString(), // Convert Date to string
+          datetime: slot.datetime.toISOString(),
         })
       );
       setTimeslots(formattedSlots);
@@ -112,10 +111,9 @@ export function AppointmentForm() {
         });
       });
     setAvailableTimes(filteredTimes);
-    form.setValue("time", ""); // Reset time selection
+    form.setValue("time", "");
   };
 
-  // Intercept pickupAtHome change
   const handlePickupAtHomeChange = async (checked: boolean) => {
     form.setValue("pickupAtHome", checked);
     if (checked) {
@@ -126,7 +124,6 @@ export function AppointmentForm() {
     }
   };
 
-  // Main submit logic
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     if (values.pickupAtHome) {
       const user = await getUserInfo();
@@ -140,7 +137,6 @@ export function AppointmentForm() {
     await submitAppointment(values);
   };
 
-  // Helper to submit appointment
   const submitAppointment = async (values: z.infer<typeof formSchema>) => {
     const selectedSlot = timeslots.find(
       (slot) =>
@@ -166,7 +162,7 @@ export function AppointmentForm() {
       const formattedSlots = slots.map(
         (slot: { id: number; datetime: Date; isAvailable: boolean }) => ({
           ...slot,
-          datetime: slot.datetime.toISOString(), // Convert Date to string
+          datetime: slot.datetime.toISOString(),
         })
       );
       setTimeslots(formattedSlots);
@@ -175,7 +171,6 @@ export function AppointmentForm() {
     }
   };
 
-  // Called when address dialog is submitted
   const handleAddressSaved = async () => {
     setAddressDialogOpen(false);
     if (pendingAppointment) {

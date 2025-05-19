@@ -80,7 +80,7 @@ export const addAppointment = async (
     species,
     reason,
     pickupAtHome,
-    userId: user[0].id, // <-- include userId
+    userId: user[0].id,
   });
 
   await updateTimeslotAvailability(timeslotId, false);
