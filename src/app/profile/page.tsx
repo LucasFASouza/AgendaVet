@@ -1,13 +1,15 @@
-import { getAppointments } from "@/actions/appointmentAction";
+import { getAppointmentsLoggedInUser } from "@/actions/appointmentAction";
 import { AppointmentsList } from "@/components/profile/AppointmentsList";
 import { EditUserDialog } from "@/components/profile/EditUserDialog";
 
 export default async function MyAppointmentsPage() {
   const now = new Date();
-  const appointments = (await getAppointments()).map((appointment) => ({
-    ...appointment,
-    datetime: new Date(appointment.datetime),
-  }));
+  const appointments = (await getAppointmentsLoggedInUser()).map(
+    (appointment) => ({
+      ...appointment,
+      datetime: new Date(appointment.datetime),
+    })
+  );
 
   const pastAppointments = appointments.filter(
     (appointment) => appointment.datetime < now

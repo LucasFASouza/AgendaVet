@@ -3,6 +3,7 @@ import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { db } from "@/db/drizzle";
 import { timeslots, appointments, users } from "@/db/schema";
+import { auth } from "@/auth";
 
 export const getTimeslots = async () => {
   const data = await db.select().from(timeslots);
@@ -113,8 +114,6 @@ export const updateAppointment = async (
   revalidatePath("/");
 };
 
-// IMPORTANT: Make sure you have run a migration to add the `user_id` column to the `appointments` table.
-
 export const getAppointmentsByEmail = async (emailPrefix: string) => {
   const email = `${emailPrefix}@gmail.com`;
   const data = await db
@@ -130,5 +129,29 @@ export const getAppointmentsByEmail = async (emailPrefix: string) => {
     .innerJoin(timeslots, eq(appointments.timeslotId, timeslots.id))
     .innerJoin(users, eq(appointments.userId, users.id))
     .where(eq(users.email, email));
+  return data;
+};
+
+export const getAppointmentsLoggedInUser = async () => {
+  const session = await auth();
+  if (!session || !session.user?.email) {
+    throw new Error("Usuário não autenticado");
+  }
+  const data = await db
+    .select({
+      id: appointments.id,
+      timeslotId: appointments.timeslotId,
+      petName: appointments.petName,
+      species: appointments.species,
+      reason: appointments.reason,
+      datetime: timeslots.datetime,
+      pickupAtHome: appointments.pickupAtHome,
+      userEmail: users.email,
+      userName: users.name,
+    })
+    .from(appointments)
+    .innerJoin(timeslots, eq(appointments.timeslotId, timeslots.id))
+    .innerJoin(users, eq(appointments.userId, users.id))
+    .where(eq(users.email, session.user.email));
   return data;
 };
